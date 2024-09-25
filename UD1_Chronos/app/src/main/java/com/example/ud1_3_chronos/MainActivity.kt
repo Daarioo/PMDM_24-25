@@ -40,12 +40,15 @@ class MainActivity : AppCompatActivity() {
         //Inicializamos cronometro
         chrono = findViewById<Chronometer>(R.id.chrTemporizador)
 
+        //Para girar el movil
         if (savedInstanceState != null){
             offset = savedInstanceState.getLong(OFFSET_KEY)
             running = savedInstanceState.getBoolean(RUNNING_KEY)
             if(running){
                 chrono.base = savedInstanceState.getLong(BASE_KEY)
                 chrono.start()
+            }else{
+                chrono.base = SystemClock.elapsedRealtime() - offset
             }
         }
         //Funcionalidad Botones
@@ -72,5 +75,34 @@ class MainActivity : AppCompatActivity() {
             chrono.stop()
 
         }
+    }
+
+    //Aplicacion pasa a segundo plano
+    override fun onStop() {
+        //SI estaba encendido, lo paro y guardo la variable offset
+        if(running){
+            offset = SystemClock.elapsedRealtime() - chrono.base
+            chrono.stop()
+        }
+        super.onStop()
+    }
+
+    //Aplicacion vuelve a primer plano
+    override fun onRestart() {
+        //Si estaba encendido lo vuelvo a ejecutar
+        if(running){
+            chrono.base= SystemClock.elapsedRealtime() - offset
+            chrono.start()
+        }
+        super.onRestart()
+    }
+
+    //Pierde el foco
+    override fun onPause() {
+        if(running){
+            offset = SystemClock.elapsedRealtime() - chrono.base
+            chrono.stop()
+        }
+        super.onPause()
     }
 }
