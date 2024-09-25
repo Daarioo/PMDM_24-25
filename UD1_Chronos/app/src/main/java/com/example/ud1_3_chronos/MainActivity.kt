@@ -105,4 +105,12 @@ class MainActivity : AppCompatActivity() {
         }
         super.onPause()
     }
+
+    override fun onResume() {
+        if(running){
+            chrono.base = SystemClock.elapsedRealtime() - offset
+            chrono.start()
+        }
+        super.onResume()
+    }
 }
